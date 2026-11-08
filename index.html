@@ -1,0 +1,3375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TalantaTix Kenya — Stadium Tickets</title>
+<style>
+:root{
+  --green:#0e9f5b;--green-dark:#0a7a45;--ink:#122117;--muted:#5f7267;
+  --bg:#f4f7f5;--card:#ffffff;--line:#e3e9e5;--red:#d64545;--amber:#d97706;
+  --purple:#9333ea;--radius:14px;--shadow:0 8px 28px rgba(18,33,23,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit;font-size:14px}
+/* ---------- header ---------- */
+.hdr{position:sticky;top:0;z-index:50;background:linear-gradient(90deg,#0c1f14,#123a26);color:#fff;border-bottom:3px solid var(--green)}
+.hdr-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:0 16px;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:.2px;color:#fff;text-decoration:none}
+.logo-badge{width:34px;height:34px;border-radius:9px;background:var(--green);display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff}
+.logo small{display:block;font-size:9.5px;font-weight:500;opacity:.75;letter-spacing:.4px}
+.nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto}
+.nav a{color:#d9e8de;text-decoration:none;font-size:13.5px;font-weight:600;padding:8px 13px;border-radius:9px;white-space:nowrap}
+.nav a.on,.nav a:hover{background:rgba(255,255,255,.12);color:#fff}
+/* ---------- layout ---------- */
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.view{display:none}.view.on{display:block}
+h1{font-size:24px;margin:6px 0 2px}
+.sub{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px;transition:.15s}
+.btn:hover{background:var(--green-dark)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:#eef4f0}
+.btn.red{background:var(--red)}
+.btn.sm{padding:7px 12px;font-size:12.5px;border-radius:8px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus{outline:2px solid rgba(14,159,91,.35);border-color:var(--green)}
+/* ---------- events ---------- */
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:16px}
+.ev-card{overflow:hidden;display:flex;flex-direction:column;transition:.15s}
+.ev-card:hover{transform:translateY(-2px)}
+.ev-banner{height:110px;background:linear-gradient(135deg,var(--gc,#0e9f5b),var(--gc2,#0a5c36));display:flex;align-items:flex-end;padding:12px;color:#fff}
+.ev-banner .cat{background:rgba(255,255,255,.18);backdrop-filter:blur(4px);padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.ev-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+.ev-body h3{font-size:16.5px;line-height:1.25}
+.ev-meta{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.ev-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:8px}
+.price-from{font-size:13px;color:var(--muted)}
+.price-from b{color:var(--green-dark);font-size:16px}
+/* ---------- booking ---------- */
+.book-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip:disabled{opacity:.5;cursor:not-allowed}
+.book-grid{display:grid;grid-template-columns:1fr 330px;gap:16px;align-items:start}
+.map-card{padding:10px;position:relative}
+#stadium{width:100%;height:auto;display:block;touch-action:none;border-radius:10px;cursor:grab}
+#stadium.drag{cursor:grabbing}
+.map-tools{position:absolute;top:18px;right:18px;display:flex;flex-direction:column;gap:6px}
+.map-tools button{width:34px;height:34px;border-radius:9px;background:#fff;border:1px solid var(--line);font-size:17px;font-weight:800;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;border-top:1px solid var(--line)}
+.legend .lg{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--muted)}
+.legend .sw{width:13px;height:13px;border-radius:4px}
+/* ---------- cart ---------- */
+.cart{position:sticky;top:76px}
+.cart-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.cart-h b{font-size:15px}
+.cart-list{padding:8px 12px;max-height:340px;overflow:auto}
+.cart-line{display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px dashed var(--line);font-size:12.5px}
+.cart-line .x{color:var(--red);font-weight:800;font-size:15px;padding:2px 6px}
+.cart-line .p{margin-left:auto;font-weight:700;white-space:nowrap}
+.cart-line small{color:var(--muted);display:block;font-size:11px}
+.cart-empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:13px}
+.cart-f{padding:13px 16px;border-top:1px solid var(--line)}
+.cart-f .tot{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px}
+.cart-f .tot b{font-size:17px;color:var(--green-dark)}
+.lim-warn{font-size:11.5px;color:var(--amber);margin-bottom:8px;display:none}
+/* ---------- seat picker ---------- */
+.modal-bk{position:fixed;inset:0;background:rgba(10,20,14,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.modal-bk.on{display:flex}
+.modal{background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.modal-h{position:sticky;top:0;background:#fff;padding:15px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;z-index:2}
+.modal-h b{font-size:16px}
+.modal-h .m-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.modal-x{margin-left:auto;font-size:22px;color:var(--muted);padding:4px 10px}
+.modal-b{padding:16px 18px}
+.cat-pick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cat-pick .cp{border:2px solid var(--line);border-radius:10px;padding:7px 12px;font-size:12px;font-weight:800}
+.cat-pick .cp small{display:block;font-weight:600;font-size:10.5px;color:var(--muted)}
+.cat-pick .cp.on{border-color:var(--ink)}
+.block-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.block-tabs .bt{border:1px solid var(--line);border-radius:8px;padding:6px 13px;font-size:12.5px;font-weight:700;color:var(--muted);background:#fff}
+.block-tabs .bt.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.seat-grid{overflow-x:auto;padding-bottom:6px}
+.srow{display:flex;align-items:center;gap:3px;margin-bottom:3px}
+.srow .rl{width:20px;font-size:10.5px;font-weight:800;color:var(--muted);text-align:center;flex:none}
+.seat{width:19px;height:19px;border-radius:5px;background:#dcefe4;border:1px solid #b8dcc8;flex:none;position:relative}
+.seat:hover:not(.off){outline:2px solid var(--green)}
+.seat.sel{background:var(--green);border-color:var(--green-dark)}
+.seat.sold{background:#e6e6e6;border-color:#d5d5d5;cursor:not-allowed}
+.seat.sold::after{content:'';position:absolute;inset:4px;background:linear-gradient(135deg,transparent 44%,#b5b5b5 44%,#b5b5b5 56%,transparent 56%)}
+.seat.held{background:#f5c26b;border-color:#e0a93f;cursor:not-allowed}
+.seat.unav{background:#4a4a4a;border-color:#333;cursor:not-allowed}
+.seat.rsvd{background:#c9a6ec;border-color:#a97fd6;cursor:not-allowed}
+.seat-legend{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;font-size:11px;color:var(--muted)}
+.seat-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-2px}
+.pick-foot{display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid var(--line);margin-top:8px}
+.pick-foot .info{font-size:13px;color:var(--muted)}
+.pick-foot .info b{color:var(--ink)}
+/* ---------- tickets ---------- */
+.tk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.tk{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+.tk-l{flex:1;padding:13px 14px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.tk-cat{align-self:flex-start;color:#fff;font-size:10px;font-weight:900;padding:3px 9px;border-radius:999px;letter-spacing:.5px}
+.tk h4{font-size:14.5px}
+.tk .seat-lbl{font-size:12px;color:var(--muted);line-height:1.5}
+.tk .code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--muted)}
+.tk-status{font-size:11px;font-weight:800}
+.tk-r{width:120px;flex:none;display:grid;place-items:center;padding:10px;border-left:1px dashed var(--line);background:#fbfdfc}
+.tk-r svg{width:96px;height:96px}
+.tk.used{opacity:.62}
+.tk.used .tk-r{background:#f3f4f3}
+/* ---------- scan ---------- */
+.scan-wrap{max-width:560px;margin:0 auto}
+.scan-res{margin-top:16px;border-radius:var(--radius);padding:18px;text-align:center;display:none}
+.scan-res.on{display:block}
+.scan-res.acc{background:#e8f8ef;border:1.5px solid #9adbb8}
+.scan-res.rej{background:#fdecec;border:1.5px solid #f3b3b3}
+.scan-res .big{font-size:19px;font-weight:900;margin-bottom:4px}
+.scan-res .dtl{font-size:13px;color:var(--muted);line-height:1.6}
+.scan-hist{margin-top:14px;font-size:12px}
+.scan-hist table{width:100%;border-collapse:collapse}
+.scan-hist td,.scan-hist th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+/* ---------- admin ---------- */
+.adm-tabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:0}
+.adm-tabs button{padding:10px 16px;font-size:13.5px;font-weight:700;color:var(--muted);border-bottom:2.5px solid transparent;white-space:nowrap}
+.adm-tabs button.on{color:var(--green-dark);border-color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{padding:14px 16px}
+.stat .v{font-size:22px;font-weight:900;color:var(--green-dark)}
+.stat .l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;padding:8px 10px;background:#f0f4f1;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl input{width:76px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px}
+.tbl select{border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px}
+.tbl-scroll{overflow-x:auto}
+.switch{position:relative;width:36px;height:20px;background:#ccc;border-radius:999px;transition:.15s;display:inline-block;vertical-align:middle}
+.switch.on{background:var(--green)}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}
+.switch.on::after{left:18px}
+.adm-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;padding:14px;margin-bottom:16px}
+.adm-form .field{margin:0}
+/* ---------- toast ---------- */
+#toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,460px)}
+.toast{background:var(--ink);color:#fff;padding:11px 18px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:var(--shadow);animation:tin .2s;max-width:100%}
+.toast.err{background:var(--red)}
+.toast.ok{background:var(--green-dark)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .book-grid{grid-template-columns:1fr}
+  .cart{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:60;border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);margin:0}
+  .cart-list{max-height:26vh}
+  .cart.min .cart-list,.cart.min .cart-f{display:none}
+  main{padding-bottom:210px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="#/">
+      <span class="logo-badge">TT</span>
+      <span>TalantaTix<small id="brand-tag">Kenya’s official stadium ticketing platform</small></span>
+    </a>
+    <nav class="nav" id="main-nav">
+      <a href="#/" data-r="">Events</a>
+      <a href="#/tickets" data-r="tickets">My Tickets</a>
+      <a href="#/scan" data-r="scan">Gate Scan</a>
+      <a href="#/admin" data-r="admin">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ EVENTS ============ -->
+  <section class="view" id="view-events">
+    <h1>Upcoming Events</h1>
+    <p class="sub" id="events-sub">Secure your seat at Talanta Stadium — pick your stand, tier and phase below.</p>
+    <div class="ev-grid" id="ev-grid"></div>
+  </section>
+
+  <!-- ============ BOOKING ============ -->
+  <section class="view" id="view-book">
+    <div id="book-head"></div>
+    <div class="book-top" id="phase-chips"></div>
+    <div class="book-grid">
+      <div class="card map-card">
+        <svg id="stadium" viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="map-tools">
+          <button id="z-in" title="Zoom in">+</button>
+          <button id="z-out" title="Zoom out">−</button>
+          <button id="z-reset" title="Reset view">⤾</button>
+        </div>
+        <div class="legend" id="map-legend"></div>
+      </div>
+      <div class="card cart" id="cart">
+        <div class="cart-h"><b>Your seats <span id="cart-n">(0)</span></b><button class="btn sm ghost" id="cart-toggle" style="display:none">▲</button></div>
+        <div class="cart-list" id="cart-list"><div class="cart-empty">Tap a section on the map to pick seats.<br>Prices are confirmed by the server at checkout.</div></div>
+        <div class="cart-f">
+          <div class="lim-warn" id="lim-warn"></div>
+          <div class="tot"><span>Subtotal</span><b id="cart-total">KSh 0</b></div>
+          <button class="btn" style="width:100%" id="btn-checkout" disabled>Checkout</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MY TICKETS ============ -->
+  <section class="view" id="view-tickets">
+    <h1>My Tickets</h1>
+    <p class="sub">Enter your order number (e.g. TTX-…) to view or re-download your tickets.</p>
+    <div style="display:flex;gap:8px;max-width:480px;margin-bottom:8px">
+      <input id="order-lookup" placeholder="Order number" style="flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 13px;text-transform:uppercase">
+      <button class="btn" id="btn-find">Find</button>
+    </div>
+    <div id="saved-orders" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
+    <div id="order-result"></div>
+  </section>
+
+  <!-- ============ SCAN ============ -->
+  <section class="view" id="view-scan">
+    <div class="scan-wrap" id="scan-login">
+      <h1>Gate Scan</h1>
+      <p class="sub">Staff sign-in required to validate tickets.</p>
+      <div class="card" style="padding:18px;max-width:380px">
+        <div class="field"><label>Staff email</label><input id="st-email" value="staff@talantatix.ke"></div>
+        <div class="field"><label>Password</label><input id="st-pass" type="password" value=""></div>
+        <button class="btn" style="width:100%" id="btn-staff-login">Sign in</button>
+        <p style="font-size:11px;color:var(--muted);margin-top:10px">Demo staff: staff@talantatix.ke / Staff@123</p>
+      </div>
+    </div>
+    <div id="scan-panel" style="display:none">
+      <h1>Gate Scan</h1>
+      <p class="sub" id="scan-who"></p>
+      <div class="card" style="padding:16px">
+        <div class="field"><label>Scan or type ticket code</label><input id="scan-input" placeholder="TTX-TKT-…" autocomplete="off" style="font-family:ui-monospace,Menlo,monospace;font-size:15px;text-transform:uppercase"></div>
+        <button class="btn" style="width:100%" id="btn-scan">Validate ticket</button>
+      </div>
+      <div class="scan-res" id="scan-res"></div>
+      <div class="scan-hist card" id="scan-hist" style="padding:6px 10px;display:none"></div>
+    </div>
+  </section>
+
+  <!-- ============ ADMIN ============ -->
+  <section class="view" id="view-admin">
+    <div id="adm-login">
+      <h1>Admin Console</h1>
+      <p class="sub">Stadium management, pricing, events and reports.</p>
+      <div class="card" style="padding:18px;max-width:380px">
+        <div class="field"><label>Email</label><input id="ad-email" value="admin@talantatix.ke"></div>
+        <div class="field"><label>Password</label><input id="ad-pass" type="password" value=""></div>
+        <button class="btn" style="width:100%" id="btn-admin-login">Sign in</button>
+        <p style="font-size:11px;color:var(--muted);margin-top:10px">Demo admin: admin@talantatix.ke / Admin@123</p>
+      </div>
+    </div>
+    <div id="adm-panel" style="display:none">
+      <h1>Admin Console</h1>
+      <p class="sub">Every change is saved straight into <code>data.json</code> — no redeploy needed.</p>
+      <div class="adm-tabs" id="adm-tabs">
+        <button data-t="ov" class="on">Overview</button>
+        <button data-t="st">Stadium</button>
+        <button data-t="ev">Events</button>
+        <button data-t="cp">Categories &amp; Promos</button>
+        <button data-t="se">Settings</button>
+      </div>
+      <div id="adm-body"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ MODALS ============ -->
+<div class="modal-bk" id="seat-modal"><div class="modal" id="seat-modal-in"></div></div>
+<div class="modal-bk" id="checkout-modal"><div class="modal" id="checkout-in"></div></div>
+<div class="modal-bk" id="pay-modal"><div class="modal" id="pay-in"></div></div>
+<div id="toasts"></div>
+
+<script>
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
+<script>
+/* ================= TalantaTix standalone app ================= */
+'use strict'
+const $ = (s, el) => (el || document).querySelector(s)
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s))
+const API = ''
+const KES = (n) => 'KSh ' + Number(n || 0).toLocaleString('en-KE')
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-KE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+const fmtTime = (iso) => new Date(iso).toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' })
+
+function toast(msg, type) {
+  const t = document.createElement('div')
+  t.className = 'toast ' + (type || '')
+  t.textContent = msg
+  $('#toasts').appendChild(t)
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = '.3s'; setTimeout(() => t.remove(), 320) }, 3400)
+}
+async function api(method, path, body, token) {
+  const res = await fetch(API + path, {
+    method,
+    headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: 'Bearer ' + token } : {}),
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+  let j = null
+  try { j = await res.json() } catch (_) {}
+  if (!j) throw { status: res.status, message: 'Server error' }
+  if (!j.ok) throw Object.assign({ status: res.status }, j)
+  return j.data
+}
+const sessionId = (() => {
+  let s = localStorage.getItem('ttx_session')
+  if (!s) { s = 'web_' + Math.random().toString(36).slice(2, 12); localStorage.setItem('ttx_session', s) }
+  return s
+})()
+
+/* ---------------- state ---------------- */
+const state = {
+  boot: null,            // {settings, categories}
+  events: [],
+  eventId: null,
+  map: null,             // stadium map payload
+  phaseFilter: 'ALL',
+  cart: [],              // {seatId, categoryId, catName, price, sectionName, blockName, row, seat}
+  pick: { sectionId: null, categoryId: null, blockIdx: 0, sel: new Map() }, // seat picker
+  order: null,           // pending order {number,...}
+  hold: null,
+  staffToken: localStorage.getItem('ttx_staff') || null,
+  staffName: localStorage.getItem('ttx_staff_name') || '',
+  admToken: sessionStorage.getItem('ttx_adm') || null,
+  admTab: 'ov',
+  scanLog: [],
+}
+const CAT = (id) => (state.boot ? state.boot.categories.find((c) => c.id === id) : null)
+
+/* ---------------- router ---------------- */
+function route() {
+  const h = location.hash || '#/'
+  const parts = h.slice(2).split('/')
+  $$('.view').forEach((v) => v.classList.remove('on'))
+  $$('#main-nav a').forEach((a) => a.classList.toggle('on', a.dataset.r === (parts[0] || '')))
+  closeAllModals()
+  if (parts[0] === '' ) { $('#view-events').classList.add('on'); loadEvents() }
+  else if (parts[0] === 'book' && parts[1]) { $('#view-book').classList.add('on'); openBook(decodeURIComponent(parts[1])) }
+  else if (parts[0] === 'tickets') { $('#view-tickets').classList.add('on') }
+  else if (parts[0] === 'scan') { $('#view-scan').classList.add('on'); renderScanView() }
+  else if (parts[0] === 'admin') { $('#view-admin').classList.add('on'); renderAdminView() }
+  else { $('#view-events').classList.add('on'); loadEvents() }
+}
+window.addEventListener('hashchange', route)
+function closeAllModals() { $$('.modal-bk').forEach((m) => m.classList.remove('on')) }
+
+/* ---------------- events view ---------------- */
+async function loadEvents() {
+  try {
+    if (!state.boot) state.boot = await api('GET', '/api/bootstrap')
+    if (state.boot.settings.siteTagline) $('#brand-tag').textContent = state.boot.settings.siteTagline
+    state.events = await api('GET', '/api/events')
+    const g = $('#ev-grid')
+    g.innerHTML = state.events.map((e, i) => {
+      const hue = ['linear-gradient(135deg,#0e9f5b,#0a5c36)', 'linear-gradient(135deg,#b91c1c,#6d1010)', 'linear-gradient(135deg,#0f766e,#063f3a)', 'linear-gradient(135deg,#7c3aed,#3b1580)'][i % 4]
+      return `<div class="card ev-card">
+        <div class="ev-banner" style="--gc:none;background:${hue}"><span class="cat">${esc(e.category)}</span></div>
+        <div class="ev-body">
+          <h3>${esc(e.name)}</h3>
+          <div class="ev-meta"><span>📅 ${fmtDate(e.date)} · ${fmtTime(e.date)}</span><span>📍 ${esc(e.venue)}</span></div>
+          <div class="ev-foot">
+            <span class="price-from">from <b>${KES(e.fromPrice)}</b></span>
+            <a class="btn sm" href="#/book/${encodeURIComponent(e.id)}">Book seats →</a>
+          </div>
+        </div>
+      </div>`
+    }).join('')
+  } catch (e) { toast(e.message || 'Failed to load events', 'err') }
+}
+
+/* ---------------- booking view ---------------- */
+async function openBook(eventId) {
+  state.eventId = eventId
+  state.phaseFilter = 'ALL'
+  try {
+    if (!state.boot) state.boot = await api('GET', '/api/bootstrap')
+    state.map = await api('GET', `/api/events/${eventId}/map`)
+  } catch (e) { toast(e.message, 'err'); return }
+  const e = state.map.event
+  $('#book-head').innerHTML = `<h1>${esc(e.name)}</h1><p class="sub">📅 ${fmtDate(e.date)} · ${fmtTime(e.date)} &nbsp;·&nbsp; 📍 ${esc(e.venue)}</p>`
+  renderPhaseChips()
+  renderLegend()
+  drawMap()
+  renderCart()
+}
+function renderPhaseChips() {
+  const m = state.map
+  const counts = {}
+  m.sections.forEach((s) => { counts[s.phaseId] = (counts[s.phaseId] || 0) + 1 })
+  const chips = [`<button class="chip ${state.phaseFilter === 'ALL' ? 'on' : ''}" data-ph="ALL">All sections (${m.sections.length})</button>`]
+  m.phases.forEach((p) => {
+    const n = counts[p.id] || 0
+    chips.push(`<button class="chip ${state.phaseFilter === p.id ? 'on' : ''}" data-ph="${p.id}" ${p.onSale ? '' : 'disabled title="Not on sale yet"'}>${esc(p.name)} · ${n} sections${p.onSale ? '' : ' (opens soon)'}</button>`)
+  })
+  $('#phase-chips').innerHTML = chips.join('')
+  $$('#phase-chips .chip').forEach((c) => c.onclick = () => { if (!c.disabled) { state.phaseFilter = c.dataset.ph; renderPhaseChips(); drawMap() } })
+}
+function sectionFill(s) {
+  if (!s.active) return '#3d3d3d'
+  if (!s.phaseOnSale) return 'url(#hatch)'
+  if (s.total && s.available === 0) return '#c7cdd0'
+  if (!s.categories.length) return '#9db5a8'
+  return s.categories.reduce((min, c) => (c.price < min.price ? c : min), s.categories[0]).color
+}
+function renderLegend() {
+  const m = state.map
+  const cats = m.categories.map((c) => `<span class="lg"><span class="sw" style="background:${c.color}"></span>${esc(c.name)} · from ${KES(c.basePrice)}</span>`)
+  $('#map-legend').innerHTML = cats.join('') +
+    `<span class="lg"><span class="sw" style="background:#c7cdd0"></span>Sold out</span>
+     <span class="lg"><span class="sw" style="background:repeating-linear-gradient(45deg,#d8d8d8 0 4px,#f4f4f4 4px 8px)"></span>Phase not on sale</span>`
+}
+
+/* ---- SVG map with pan & zoom ---- */
+const MAP = { view: { x: 0, y: 0, w: 1000, h: 680 }, dragging: false, moved: false, px: 0, py: 0, pointers: new Map(), pinch0: null }
+function setView(v) {
+  const r = $('#stadium').getBoundingClientRect()
+  const minW = 1000 * 0.28
+  v.w = Math.min(1400, Math.max(minW, v.w)); v.h = v.w * (680 / 1000)
+  v.x = Math.min(1000 - 40, Math.max(-v.w + 40, v.x)); v.y = Math.min(680 - 40, Math.max(-v.h + 40, v.y))
+  MAP.view = v
+  $('#stadium').setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`)
+  const fs = Math.max(7, Math.min(13, v.w / 70))
+  $$('#stadium text.sec-num').forEach((t) => t.setAttribute('font-size', fs))
+}
+function svgPoint(clientX, clientY) {
+  const r = $('#stadium').getBoundingClientRect()
+  return { x: MAP.view.x + (clientX - r.left) / r.width * MAP.view.w, y: MAP.view.y + (clientY - r.top) / r.height * MAP.view.h }
+}
+function drawMap() {
+  const m = state.map
+  const P = { x: 230, y: 160, w: 540, h: 360 }
+  let defs = `<defs><pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#ececec"/><line x1="0" y1="0" x2="0" y2="8" stroke="#c9c9c9" stroke-width="2.5"/></pattern></defs>`
+  let pitch = `<g>
+    <rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="6" fill="#2f9e57" stroke="#ffffff" stroke-width="3"/>
+    <line x1="${P.x + P.w / 2}" y1="${P.y}" x2="${P.x + P.w / 2}" y2="${P.y + P.h}" stroke="#ffffff" stroke-width="2.5" opacity=".8"/>
+    <circle cx="${P.x + P.w / 2}" cy="${P.y + P.h / 2}" r="52" fill="none" stroke="#ffffff" stroke-width="2.5" opacity=".8"/>
+    <rect x="${P.x + 68}" y="${P.y + 128}" width="100" height="104" fill="none" stroke="#fff" stroke-width="2" opacity=".7"/>
+    <rect x="${P.x + P.w - 168}" y="${P.y + 128}" width="100" height="104" fill="none" stroke="#fff" stroke-width="2" opacity=".7"/>
+    <text x="${P.x + P.w / 2}" y="${P.y + 34}" text-anchor="middle" fill="#eafbef" font-size="17" font-weight="800" letter-spacing="2">TALANTA STADIUM</text>
+  </g>`
+  const standNames = {}
+  m.stands.forEach((s) => (standNames[s.id] = s))
+  const levelNames = {}
+  m.levels.forEach((l) => (levelNames[l.id] = l))
+  const inFilter = (s) => state.phaseFilter === 'ALL' || s.phaseId === state.phaseFilter
+  const selSecs = new Set(state.cart.map((c) => c.sectionId))
+  const secs = m.sections.map((s) => {
+    const fill = sectionFill(s)
+    const dim = !inFilter(s)
+    const op = dim ? 0.22 : 1
+    const stroke = selSecs.has(s.id) && !dim ? '#122117' : '#ffffff'
+    const sw = selSecs.has(s.id) && !dim ? 3 : 1.4
+    const label = `<text class="sec-num" x="${s.map.x + s.map.w / 2}" y="${s.map.y + s.map.h / 2 + 3.5}" text-anchor="middle" font-size="10" font-weight="800" fill="${fill === '#c7cdd0' || fill === 'url(#hatch)' ? '#777' : '#fff'}" pointer-events="none" opacity="${op}">${s.num}</text>`
+    return `<rect class="sec" data-id="${s.id}" x="${s.map.x}" y="${s.map.y}" width="${s.map.w}" height="${s.map.h}" rx="3.5" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" opacity="${op}" style="cursor:${dim || !s.active ? 'default' : 'pointer'}"/>${label}`
+  }).join('')
+  $('#stadium').innerHTML = defs + pitch + secs
+  $$('#stadium .sec').forEach((r) => {
+    r.addEventListener('click', () => { if (MAP.moved) return; onSectionClick(r.dataset.id) })
+    r.addEventListener('mouseenter', () => showSecTip(r.dataset.id))
+    r.addEventListener('mouseleave', hideTip)
+  })
+  setView({ x: 0, y: 0, w: 1000, h: 680 })
+}
+function showSecTip(secId) {
+  const s = state.map.sections.find((x) => x.id === secId)
+  if (!s) return
+  const stand = state.map.stands.find((x) => x.id === s.standId)
+  const level = state.map.levels.find((x) => x.id === s.levelId)
+  const phase = state.map.phases.find((x) => x.id === s.phaseId)
+  const prices = s.categories.map((c) => `${c.name} ${KES(c.price)}`).join(' · ')
+  tip.innerHTML = `<b>${esc(s.name)}</b> — ${esc(stand ? stand.name : '')} · ${esc(level ? level.shortName : '')} · ${esc(phase ? phase.name : '')}<br>${esc(prices)}<br>${s.active ? (s.phaseOnSale ? `${s.available} of ${s.total} seats available` : 'Not on sale yet') : 'Not in use'}`
+  tip.style.display = 'block'
+}
+let tip = null
+function hideTip() { if (tip) tip.style.display = 'none' }
+/* pan / zoom gestures */
+function initMapGestures() {
+  const svg = $('#stadium')
+  tip = document.createElement('div')
+  tip.style.cssText = 'position:fixed;z-index:90;background:#122117;color:#fff;padding:8px 12px;border-radius:9px;font-size:12px;line-height:1.5;pointer-events:none;display:none;max-width:300px;box-shadow:0 6px 20px rgba(0,0,0,.25)'
+  document.body.appendChild(tip)
+  svg.addEventListener('pointerdown', (e) => {
+    MAP.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    if (MAP.pointers.size === 1) { MAP.dragging = true; MAP.moved = false; MAP.px = e.clientX; MAP.py = e.clientY; svg.classList.add('drag') }
+    if (MAP.pointers.size === 2) { const pts = [...MAP.pointers.values()]; MAP.pinch0 = { d: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y), v: { ...MAP.view } } }
+    svg.setPointerCapture(e.pointerId)
+  })
+  svg.addEventListener('pointermove', (e) => {
+    if (!MAP.pointers.has(e.pointerId)) return
+    MAP.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    if (MAP.pointers.size === 2 && MAP.pinch0) {
+      const pts = [...MAP.pointers.values()]
+      const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+      const scale = MAP.pinch0.d / Math.max(20, d)
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      const p0 = svgPointAt(mid.x, mid.y, MAP.pinch0.v)
+      setView({ x: p0.x - (mid.x - svg.getBoundingClientRect().left) / svg.getBoundingClientRect().width * MAP.pinch0.v.w * scale, y: p0.y - (mid.y - svg.getBoundingClientRect().top) / svg.getBoundingClientRect().height * MAP.pinch0.v.h * scale, w: MAP.pinch0.v.w * scale, h: MAP.pinch0.v.h * scale })
+      MAP.moved = true; return
+    }
+    if (!MAP.dragging) return
+    const dx = e.clientX - MAP.px, dy = e.clientY - MAP.py
+    if (Math.abs(dx) + Math.abs(dy) > 4) MAP.moved = true
+    const r = svg.getBoundingClientRect()
+    MAP.view.x -= dx / r.width * MAP.view.w; MAP.view.y -= dy / r.height * MAP.view.h
+    MAP.px = e.clientX; MAP.py = e.clientY
+    setView(MAP.view)
+  })
+  const up = (e) => { MAP.pointers.delete(e.pointerId); if (MAP.pointers.size < 2) MAP.pinch0 = null; if (!MAP.pointers.size) { MAP.dragging = false; svg.classList.remove('drag'); setTimeout(() => (MAP.moved = false), 30) } }
+  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up)
+  svg.addEventListener('wheel', (e) => {
+    e.preventDefault()
+    const factor = e.deltaY > 0 ? 1.18 : 0.85
+    const p = svgPoint(e.clientX, e.clientY)
+    const nw = MAP.view.w * factor, nh = nw * (680 / 1000)
+    setView({ x: p.x - (p.x - MAP.view.x) * (nw / MAP.view.w), y: p.y - (p.y - MAP.view.y) * (nh / MAP.view.h), w: nw, h: nh })
+  }, { passive: false })
+  $('#z-in').onclick = () => setView({ ...MAP.view, w: MAP.view.w * 0.75, h: MAP.view.h * 0.75 })
+  $('#z-out').onclick = () => setView({ ...MAP.view, w: MAP.view.w * 1.33, h: MAP.view.h * 1.33 })
+  $('#z-reset').onclick = () => setView({ x: 0, y: 0, w: 1000, h: 680 })
+}
+function svgPointAt(clientX, clientY, view) {
+  const r = $('#stadium').getBoundingClientRect()
+  return { x: view.x + (clientX - r.left) / r.width * view.w, y: view.y + (clientY - r.top) / r.height * view.h }
+}
+/* ---------------- section seat picker ---------------- */
+async function onSectionClick(secId) {
+  const s = state.map.sections.find((x) => x.id === secId)
+  if (!s || !s.active) return
+  if (!s.phaseOnSale) { toast(`${s.phaseId.replace('ph_', 'Phase ')} is not open for sale yet`, 'err'); return }
+  if (s.available === 0) { toast('Section is sold out', 'err'); return }
+  try {
+    const data = await api('GET', `/api/events/${state.eventId}/sections/${secId}/seats`)
+    state.pick = { sectionId: secId, data, categoryId: data.categories.length ? data.categories[0].id : null, blockIdx: 0, sel: new Map() }
+    renderSeatModal()
+    $('#seat-modal').classList.add('on')
+  } catch (e) { toast(e.message, 'err') }
+}
+function renderSeatModal() {
+  const p = state.pick
+  const d = p.data
+  const block = d.blocks[p.blockIdx]
+  const cat = d.categories.find((c) => c.id === p.categoryId)
+  const secInfo = state.map.sections.find((x) => x.id === p.sectionId)
+  const stand = state.map.stands.find((x) => x.id === secInfo.standId)
+  const level = state.map.levels.find((x) => x.id === secInfo.levelId)
+  const phase = state.map.phases.find((x) => x.id === secInfo.phaseId)
+  let selCount = 0, selTotal = 0
+  p.sel.forEach((catId) => { const c = d.categories.find((x) => x.id === catId); selTotal += c ? c.price : 0; selCount++ })
+  $('#seat-modal-in').innerHTML = `
+    <div class="modal-h">
+      <div><b>${esc(d.section.name)} — ${esc(block.name)}</b>
+        <div class="m-sub">${esc(stand ? stand.name : '')} · ${esc(level ? level.shortName : '')} · ${esc(phase ? phase.name : '')} · Pick a category, then tap seats</div></div>
+      <button class="modal-x" onclick="document.getElementById('seat-modal').classList.remove('on')">×</button>
+    </div>
+    <div class="modal-b">
+      <div class="cat-pick">${d.categories.map((c) => `<button class="cp ${p.categoryId === c.id ? 'on' : ''}" data-cat="${c.id}" style="${p.categoryId === c.id ? '' : `border-color:${c.color}`}"><span style="color:${c.color}">●</span> ${esc(c.name)}<small>${KES(c.price)}</small></button>`).join('')}</div>
+      <div class="block-tabs">${d.blocks.map((b, i) => `<button class="bt ${i === p.blockIdx ? 'on' : ''}" data-blk="${i}">${esc(b.name)}</button>`).join('')}</div>
+      <div class="seat-grid">${block.rows.map((row) => `<div class="srow"><span class="rl">${esc(row.label)}</span>${row.seats.map((st) => `<button class="seat ${st.s === 'AVAILABLE' ? (p.sel.has(st.id) ? 'sel' : '') : st.s.toLowerCase().replace('unavailable', 'unav').replace('reserved', 'rsvd')}" data-seat="${st.id}" data-st="${st.s}" ${st.s !== 'AVAILABLE' ? 'disabled' : ''} title="Seat ${st.n} · ${esc(st.note || (st.s === 'AVAILABLE' ? 'Available' : st.s))}"></button>`).join('')}</div>`).join('')}</div>
+      <div class="seat-legend">
+        <span><i style="background:#dcefe4;border:1px solid #b8dcc8"></i>Available</span>
+        <span><i style="background:var(--green)"></i>Selected</span>
+        <span><i style="background:#e6e6e6"></i>Sold</span>
+        <span><i style="background:#f5c26b"></i>Held (checkout in progress)</span>
+        <span><i style="background:#4a4a4a"></i>Unavailable</span>
+        <span><i style="background:#c9a6ec"></i>Reserved</span>
+      </div>
+      <div class="pick-foot">
+        <span class="info"><b>${selCount}</b> seat${selCount === 1 ? '' : 's'} · <b>${KES(selTotal)}</b>${cat ? ` · ${esc(cat.name)} @ ${KES(cat.price)}` : ''}</span>
+        <button class="btn" style="margin-left:auto" id="btn-add-seats" ${selCount ? '' : 'disabled'}>Add ${selCount || ''} to cart</button>
+      </div>
+    </div>`
+  $$('#seat-modal-in .cp').forEach((b) => (b.onclick = () => { p.categoryId = b.dataset.cat; renderSeatModal() }))
+  $$('#seat-modal-in .bt').forEach((b) => (b.onclick = () => { p.blockIdx = Number(b.dataset.blk); renderSeatModal() }))
+  $$('#seat-modal-in .seat').forEach((b) => (b.onclick = () => {
+    const sid = b.dataset.seat
+    if (p.sel.has(sid)) p.sel.delete(sid)
+    else {
+      if (state.cart.length + p.sel.size >= state.boot.settings.maxSeatsPerOrder) { toast(`Maximum ${state.boot.settings.maxSeatsPerOrder} seats per transaction`, 'err'); return }
+      p.sel.set(sid, p.categoryId)
+    }
+    renderSeatModal()
+  }))
+  $('#btn-add-seats').onclick = () => {
+    p.sel.forEach((catId, seatId) => {
+      const c = d.categories.find((x) => x.id === catId)
+      const [sec, blk, row, num] = seatId.split(':')
+      if (state.cart.some((x) => x.seatId === seatId)) return
+      state.cart.push({ seatId, categoryId: catId, catName: c.name, price: c.price, sectionId: p.sectionId, sectionName: d.section.name, blockName: block.name, row, seat: num })
+    })
+    state.pick.sel = new Map()
+    $('#seat-modal').classList.remove('on')
+    renderCart()
+    toast(`${selCount} seat${selCount === 1 ? '' : 's'} added to cart`, 'ok')
+  }
+}
+/* ---------------- cart ---------------- */
+function renderCart() {
+  const cart = state.cart
+  $('#cart-n').textContent = `(${cart.length})`
+  const total = cart.reduce((a, c) => a + c.price, 0)
+  $('#cart-total').textContent = KES(total)
+  $('#btn-checkout').disabled = !cart.length
+  $('#cart-list').innerHTML = cart.length
+    ? cart.map((c, i) => `<div class="cart-line"><div><b>${esc(c.sectionName)} · ${esc(c.blockName)}</b><small>Row ${esc(c.row)} · Seat ${esc(c.seat)} · <span style="color:${(CAT(c.categoryId) || {}).color || '#333'};font-weight:700">${esc(c.catName)}</span></small></div><span class="p">${KES(c.price)}</span><button class="x" data-i="${i}" title="Remove">×</button></div>`).join('')
+    : `<div class="cart-empty">Tap a section on the map to pick seats.<br>Prices are confirmed by the server at checkout.</div>`
+  $$('#cart-list .x').forEach((b) => (b.onclick = () => { state.cart.splice(Number(b.dataset.i), 1); renderCart(); drawMap() }))
+  const lim = $('#lim-warn')
+  if (cart.length >= state.boot.settings.maxSeatsPerOrder) { lim.style.display = 'block'; lim.textContent = `Maximum ${state.boot.settings.maxSeatsPerOrder} seats per transaction.` } else lim.style.display = 'none'
+  if (state.map) drawMap()
+}
+/* ---------------- checkout ---------------- */
+async function startCheckout() {
+  if (!state.cart.length) return
+  // 1. hold seats on the server (server computes prices)
+  const groups = {}
+  state.cart.forEach((c) => { (groups[c.categoryId] = groups[c.categoryId] || []).push(c.seatId) })
+  const items = Object.entries(groups).map(([categoryId, seatIds]) => ({ categoryId, seatIds }))
+  let hold
+  try {
+    hold = await api('POST', '/api/holds', { eventId: state.eventId, items, session: sessionId })
+  } catch (e) {
+    if (e.taken && e.taken.length) {
+      state.cart = state.cart.filter((c) => !e.taken.includes(c.seatId))
+      renderCart()
+      toast(e.message + ' — removed from your cart. Please pick again.', 'err')
+    } else toast(e.message, 'err')
+    return
+  }
+  state.hold = hold
+  // 2. order
+  const sub = hold.subtotal
+  $('#checkout-in').innerHTML = `
+    <div class="modal-h"><div><b>Checkout</b><div class="m-sub">Seats are held for ${state.boot.settings.holdMinutes} minutes while you pay.</div></div><button class="modal-x" id="co-x">×</button></div>
+    <div class="modal-b">
+      <table class="tbl"><thead><tr><th>Seat</th><th>Category</th><th style="text-align:right">Price</th></tr></thead><tbody>
+      ${hold.lines.map((l) => `<tr><td>${esc(l.sectionName)} · ${esc(l.blockName)} · Row ${esc(l.row)} · Seat ${esc(l.seat)}</td><td>${esc((CAT(l.categoryId) || {}).name || l.categoryId)}</td><td style="text-align:right">${KES(l.unitPrice)}</td></tr>`).join('')}
+      </tbody><tfoot><tr><td colspan="2" style="text-align:right;font-weight:800">Subtotal</td><td style="text-align:right;font-weight:800">${KES(sub)}</td></tr></tfoot></table>
+      <div style="height:12px"></div>
+      <div class="field"><label>Full name</label><input id="co-name" placeholder="e.g. Brian Otieno"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field"><label>Phone (M-Pesa)</label><input id="co-phone" placeholder="+2547…"></div>
+        <div class="field"><label>Email</label><input id="co-email" type="email" placeholder="you@example.com"></div>
+      </div>
+      <div class="field"><label>Promo code (optional)</label><input id="co-promo" placeholder="EARLYBIRD10" style="text-transform:uppercase"></div>
+      <button class="btn" style="width:100%" id="btn-place-order">Place order & hold seats</button>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Final prices are always computed on the server from the stadium price list.</p>
+    </div>`
+  $('#checkout-modal').classList.add('on')
+  $('#co-x').onclick = () => { releaseHold(); $('#checkout-modal').classList.remove('on') }
+  $('#btn-place-order').onclick = async () => {
+    const contact = { name: $('#co-name').value.trim(), phone: $('#co-phone').value.trim(), email: $('#co-email').value.trim() }
+    if (!contact.name || !contact.phone) { toast('Name and phone number are required', 'err'); return }
+    try {
+      const r = await api('POST', '/api/orders', { holdId: hold.holdId, contact, promoCode: $('#co-promo').value.trim() || null })
+      state.order = r.order
+      $('#checkout-modal').classList.remove('on')
+      openPayModal()
+    } catch (e) { toast(e.message, 'err') }
+  }
+}
+async function releaseHold() {
+  if (state.hold) { try { await api('DELETE', '/api/holds/' + state.hold.holdId) } catch (_) {} state.hold = null }
+}
+/* ---------------- payment ---------------- */
+function openPayModal() {
+  const o = state.order
+  let timer = null
+  const tick = () => {
+    const el = $('#pay-countdown')
+    if (!el) return clearInterval(timer)
+    const left = new Date(o.holdExpiresAt).getTime() - Date.now()
+    if (left <= 0) { el.textContent = 'EXPIRED'; clearInterval(timer); $('#pay-in .btn') && ($('#pay-in .btn').disabled = true); return }
+    el.textContent = `${Math.floor(left / 60000)}:${String(Math.floor((left % 60000) / 1000)).padStart(2, '0')}`
+  }
+  const mpesa = state.boot.settings.mpesaEnabled, card = state.boot.settings.cardEnabled
+  $('#pay-in').innerHTML = `
+    <div class="modal-h"><div><b>Payment</b><div class="m-sub">Order <b>${esc(o.number)}</b> · ${KES(o.total)}${o.discount ? ` (promo −${KES(o.discount)})` : ''} · seats held <b id="pay-countdown"></b></div></div><button class="modal-x" id="pay-x">×</button></div>
+    <div class="modal-b">
+      ${mpesa ? `<div class="card" style="padding:14px;margin-bottom:12px">
+        <b style="font-size:14px">M-Pesa</b>
+        <p style="font-size:12px;color:var(--muted);margin:6px 0 10px">Simulated STK push — click confirm and payment completes automatically (sandbox mode).</p>
+        <button class="btn" style="width:100%" id="btn-mpesa">Confirm M-Pesa payment · ${KES(o.total)}</button>
+      </div>` : ''}
+      ${card ? `<div class="card" style="padding:14px">
+        <b style="font-size:14px">Card</b>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin:10px 0">
+          <div class="field" style="margin:0"><label>Card number</label><input id="cc-num" value="4242 4242 4242 4242"></div>
+          <div class="field" style="margin:0"><label>Expiry</label><input id="cc-exp" value="12/29"></div>
+          <div class="field" style="margin:0"><label>CVC</label><input id="cc-cvc" value="123"></div>
+        </div>
+        <button class="btn ghost" style="width:100%" id="btn-card">Pay ${KES(o.total)} by card</button>
+      </div>` : ''}
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">If the timer expires, held seats are automatically released back into inventory.</p>
+    </div>`
+  $('#pay-modal').classList.add('on')
+  timer = setInterval(tick, 500); tick()
+  $('#pay-x').onclick = () => { clearInterval(timer); $('#pay-modal').classList.remove('on'); toast(`Payment pending — find order ${o.number} under My Tickets`, 'ok') }
+  const doPay = async (method) => {
+    $$('#pay-in .btn').forEach((b) => (b.disabled = true))
+    try {
+      const r = await api('POST', `/api/orders/${o.number}/pay`, { method })
+      clearInterval(timer)
+      state.cart = []
+      state.hold = null
+      saveOrderNumber(r.order.number)
+      showTicketModal(r.order, r.tickets)
+    } catch (e) {
+      toast(e.message, 'err')
+      $$('#pay-in .btn').forEach((b) => (b.disabled = false))
+    }
+  }
+  if ($('#btn-mpesa')) $('#btn-mpesa').onclick = () => doPay('MPESA')
+  if ($('#btn-card')) $('#btn-card').onclick = () => doPay('CARD')
+}
+/* ---------------- tickets ---------------- */
+function qrSvg(text, size) {
+  try {
+    const qr = qrcode(0, 'M')
+    qr.addData(text)
+    qr.make()
+    return qr.createSvgTag({ cellSize: size || 4, margin: 1, scalable: true })
+  } catch (_) { return '<div style="font-size:10px">QR unavailable</div>' }
+}
+function ticketCards(tickets) {
+  return `<div class="tk-list">${tickets.map((t) => {
+    const cat = CAT(t.categoryId) || {}
+    const used = t.status === 'USED'
+    return `<div class="tk ${used ? 'used' : ''}">
+      <div class="tk-l">
+        <span class="tk-cat" style="background:${cat.color || '#333'}">${esc(t.categoryName)}</span>
+        <h4>${esc(t.eventName)}</h4>
+        <span class="seat-lbl">${esc(t.seatLabel)}</span>
+        <span class="seat-lbl">📅 ${t.eventDate ? fmtDate(t.eventDate) + ' · ' + fmtTime(t.eventDate) : ''} · 📍 ${esc(t.venue || 'Talanta Stadium')}</span>
+        <span class="code">${esc(t.code)}</span>
+        <span class="tk-status" style="color:${used ? 'var(--red)' : 'var(--green-dark)'}">${used ? `USED · ${esc(t.usedAt ? new Date(t.usedAt).toLocaleString('en-KE') : '')}` : 'VALID — not yet scanned'}</span>
+      </div>
+      <div class="tk-r">${qrSvg(t.code)}</div>
+    </div>`
+  }).join('')}</div>`
+}
+function showTicketModal(order, tickets) {
+  $('#pay-in').innerHTML = `
+    <div class="modal-h"><div><b>🎟️ Payment successful</b><div class="m-sub">Order <b>${esc(order.number)}</b> — ${tickets.length} ticket${tickets.length === 1 ? '' : 's'} issued</div></div><button class="modal-x" id="tk-x">×</button></div>
+    <div class="modal-b">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Each ticket carries its own unique QR code. Present it at the gate — it validates exactly once.</p>
+      ${ticketCards(tickets)}
+      <button class="btn" style="width:100%;margin-top:14px" onclick="window.print()">Print tickets</button>
+    </div>`
+  $('#pay-modal').classList.add('on')
+  $('#tk-x').onclick = () => { $('#pay-modal').classList.remove('on'); location.hash = '#/tickets' }
+  renderCart()
+}
+function saveOrderNumber(num) {
+  let list = []
+  try { list = JSON.parse(localStorage.getItem('ttx_orders') || '[]') } catch (_) {}
+  if (!list.includes(num)) list.unshift(num)
+  localStorage.setItem('ttx_orders', JSON.stringify(list.slice(0, 8)))
+}
+async function findOrder(num) {
+  num = (num || $('#order-lookup').value).trim().toUpperCase()
+  if (!num) return
+  const box = $('#order-result')
+  box.innerHTML = '<p class="sub">Loading…</p>'
+  try {
+    const r = await api('GET', '/api/orders/' + encodeURIComponent(num))
+    const o = r.order
+    saveOrderNumber(o.number)
+    renderSavedOrders()
+    const payBtn = o.status === 'PENDING' ? `<button class="btn" id="btn-resume-pay" style="margin:10px 0">Complete payment · ${KES(o.total)}</button>` : ''
+    box.innerHTML = `
+      <div class="card" style="padding:16px;margin-bottom:14px">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center">
+          <div><b style="font-size:16px">${esc(o.number)}</b><div class="sub" style="margin:2px 0 0">${r.event ? esc(r.event.name) + ' · ' + fmtDate(r.event.date) : ''}</div></div>
+          <span class="chip" style="${o.status === 'PAID' ? 'background:#e8f8ef;color:var(--green-dark);border-color:#9adbb8' : o.status === 'PENDING' ? 'background:#fef3e2;color:var(--amber);border-color:#f0c78a' : 'background:#fdecec;color:var(--red);border-color:#f3b3b3'}">${esc(o.status)}</span>
+        </div>
+        ${payBtn}
+        ${o.status === 'PAID' && o.payment ? `<p class="sub" style="margin:6px 0 0">Paid ${KES(o.payment.amount)} via ${esc(o.payment.method)}${o.payment.reference ? ' · Ref ' + esc(o.payment.reference) : ''}</p>` : ''}
+      </div>
+      ${o.status === 'PAID' ? ticketCards(r.tickets) : `<p class="sub">Tickets are issued once payment succeeds.</p>`}`
+    if (o.status === 'PENDING') $('#btn-resume-pay').onclick = () => { state.order = o; openPayModal() }
+  } catch (e) { box.innerHTML = `<p class="sub">❌ ${esc(e.message)}</p>` }
+}
+function renderSavedOrders() {
+  let list = []
+  try { list = JSON.parse(localStorage.getItem('ttx_orders') || '[]') } catch (_) {}
+  $('#saved-orders').innerHTML = list.map((n) => `<button class="chip" data-o="${esc(n)}">${esc(n)}</button>`).join('')
+  $$('#saved-orders .chip').forEach((b) => (b.onclick = () => { $('#order-lookup').value = b.dataset.o; findOrder() }))
+}
+/* ---------------- scan view ---------------- */
+function renderScanView() {
+  const logged = !!state.staffToken
+  $('#scan-login').style.display = logged ? 'none' : 'block'
+  $('#scan-panel').style.display = logged ? 'block' : 'none'
+  if (!logged) return
+  $('#scan-who').innerHTML = `Signed in as <b>${esc(state.staffName)}</b> · <a href="#" id="scan-out" style="color:var(--red)">sign out</a>`
+  $('#scan-out').onclick = (e) => { e.preventDefault(); state.staffToken = null; localStorage.removeItem('ttx_staff'); localStorage.removeItem('ttx_staff_name'); renderScanView() }
+  $('#scan-res').className = 'scan-res'
+  $('#scan-hist').style.display = state.scanLog.length ? 'block' : 'none'
+  renderScanHist()
+}
+function renderScanHist() {
+  $('#scan-hist').innerHTML = `<table><thead><tr><th>Time</th><th>Code</th><th>Result</th></tr></thead><tbody>${state.scanLog.slice(0, 8).map((s) => `<tr><td>${new Date(s.at).toLocaleTimeString('en-KE')}</td><td style="font-family:monospace;font-size:11px">${esc(s.code)}</td><td style="color:${s.ok ? 'var(--green-dark)' : 'var(--red)'};font-weight:700">${s.ok ? 'ACCEPTED' : esc(s.reason)}</td></tr>`).join('')}</tbody></table>`
+}
+async function doScan() {
+  const code = $('#scan-input').value.trim().toUpperCase()
+  if (!code) return
+  $('#scan-input').value = ''
+  $('#scan-input').focus()
+  const box = $('#scan-res')
+  try {
+    const r = await api('POST', '/api/scan', { code }, state.staffToken)
+    const t = r.ticket
+    if (r.result === 'ACCEPTED') {
+      box.className = 'scan-res on acc'
+      box.innerHTML = `<div class="big">✅ TICKET ACCEPTED</div>
+        <div class="dtl"><b>${esc(t.holderName)}</b> · ${esc(r.categoryName || t.categoryName)}<br>${esc(r.seat || t.seatLabel)}<br>${esc(r.event || t.eventName)}</div>`
+      state.scanLog.unshift({ at: new Date().toISOString(), code, ok: true, reason: null })
+    } else {
+      const reasons = { NOT_FOUND: 'Ticket not found in the system', ALREADY_USED: `Already scanned${r.usedAt ? ' on ' + new Date(r.usedAt).toLocaleString('en-KE') : ''}${r.usedBy ? ' by ' + r.usedBy : ''}`, UNPAID: 'Ticket payment is not complete', CANCELLED: 'Ticket was cancelled or refunded' }
+      box.className = 'scan-res on rej'
+      box.innerHTML = `<div class="big">❌ ENTRY DENIED</div><div class="dtl">${esc(reasons[r.reason] || r.reason)}<br><span style="font-family:monospace">${esc(code)}</span></div>`
+      state.scanLog.unshift({ at: new Date().toISOString(), code, ok: false, reason: r.reason })
+    }
+  } catch (e) {
+    box.className = 'scan-res on rej'
+    box.innerHTML = `<div class="big">❌ ERROR</div><div class="dtl">${esc(e.message)}</div>`
+  }
+  renderScanHist()
+}
+/* ---------------- admin ---------------- */
+async function renderAdminView() {
+  const logged = !!state.admToken
+  $('#adm-login').style.display = logged ? 'none' : 'block'
+  $('#adm-panel').style.display = logged ? 'block' : 'none'
+  if (!logged) return
+  $$('#adm-tabs button').forEach((b) => {
+    b.classList.toggle('on', b.dataset.t === state.admTab)
+    b.onclick = () => { state.admTab = b.dataset.t; renderAdminView() }
+  })
+  const body = $('#adm-body')
+  body.innerHTML = '<p class="sub">Loading…</p>'
+  try {
+    if (state.admTab === 'ov') {
+      const o = await api('GET', '/api/admin/overview', undefined, state.admToken)
+      body.innerHTML = `
+        <div class="stats">
+          <div class="card stat"><div class="v">${KES(o.revenue)}</div><div class="l">Total revenue</div></div>
+          <div class="card stat"><div class="v">${o.ticketsSold}</div><div class="l">Tickets issued</div></div>
+          <div class="card stat"><div class="v">${o.ticketsUsed}</div><div class="l">Tickets scanned</div></div>
+          <div class="card stat"><div class="v">${o.activeHolds}</div><div class="l">Active seat holds</div></div>
+          <div class="card stat"><div class="v">${o.orders.paid}/${o.orders.pending}</div><div class="l">Paid / pending orders</div></div>
+        </div>
+        <div class="card" style="padding:14px;margin-bottom:14px"><b style="font-size:13px">Sales per event</b>
+          <div class="tbl-scroll" style="margin-top:8px"><table class="tbl"><thead><tr><th>Event</th><th>Date</th><th>Capacity</th><th>Sold</th><th>Occupancy</th><th>Orders</th><th style="text-align:right">Revenue</th></tr></thead><tbody>
+          ${o.perEvent.map((e) => `<tr><td>${esc(e.name)}</td><td>${fmtDate(e.date)}</td><td>${e.capacity.toLocaleString()}</td><td>${e.sold}</td><td>${e.occupancy}%</td><td>${e.orders}</td><td style="text-align:right;font-weight:700">${KES(e.revenue)}</td></tr>`).join('')}
+          </tbody></table></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" class="ov2">
+          <div class="card" style="padding:14px"><b style="font-size:13px">Revenue by category</b>
+            <table class="tbl" style="margin-top:8px"><thead><tr><th>Category</th><th>Tickets</th><th style="text-align:right">Revenue</th></tr></thead><tbody>
+            ${Object.entries(o.byCategory).map(([n, c]) => `<tr><td>${esc(n)}</td><td>${c.tickets}</td><td style="text-align:right">${KES(c.revenue)}</td></tr>`).join('') || '<tr><td colspan="3">No sales yet</td></tr>'}
+            </tbody></table></div>
+          <div class="card" style="padding:14px"><b style="font-size:13px">Recent orders</b>
+            <table class="tbl" style="margin-top:8px"><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th style="text-align:right">Total</th></tr></thead><tbody>
+            ${o.recentOrders.map((x) => `<tr><td>${esc(x.number)}</td><td>${esc(x.contact)}</td><td>${esc(x.status)}</td><td style="text-align:right">${KES(x.total)}</td></tr>`).join('') || '<tr><td colspan="4">No orders yet</td></tr>'}
+            </tbody></table></div>
+        </div>`
+    } else if (state.admTab === 'st') {
+      const s = await api('GET', '/api/admin/stadium', undefined, state.admToken)
+      const standName = (id) => (s.stands.find((x) => x.id === id) || {}).name || id
+      const levelName = (id) => (s.levels.find((x) => x.id === id) || {}).shortName || id
+      const phaseOpts = (cur) => s.phases.map((p) => `<option value="${p.id}" ${p.id === cur ? 'selected' : ''}>${esc(p.name)}${p.onSale ? '' : ' (not on sale)'}</option>`).join('')
+      body.innerHTML = `
+        <div class="card" style="padding:14px;margin-bottom:14px"><b style="font-size:13px">Sale phases</b>
+          <table class="tbl" style="margin-top:8px"><thead><tr><th>Phase</th><th>Description</th><th>On sale</th></tr></thead><tbody>
+          ${s.phases.map((p) => `<tr><td><b>${esc(p.name)}</b></td><td style="color:var(--muted)">${esc(p.description)}</td><td><button class="switch ${p.onSale ? 'on' : ''}" data-ph="${p.id}" title="Toggle on sale"></button></td></tr>`).join('')}
+          </tbody></table></div>
+        <div class="card" style="padding:14px;margin-bottom:14px"><b style="font-size:13px">Sections (${s.sections.length}) — edit prices, phase or availability inline</b>
+          <div class="tbl-scroll" style="margin-top:8px;max-height:420px;overflow:auto"><table class="tbl"><thead><tr><th>#</th><th>Stand</th><th>Level</th><th>Phase</th><th>${s.categories.map((c) => `${esc(c.name)} KSh`).join('</th><th>')}</th><th>Active</th><th></th></tr></thead><tbody>
+          ${s.sections.map((sec) => `<tr data-sec="${sec.id}">
+            <td><b>${sec.num}</b>${sec.premium ? ' ⭐' : ''}</td>
+            <td>${esc(standName(sec.standId))}</td><td>${esc(levelName(sec.levelId))}</td>
+            <td><select data-f="phaseId">${phaseOpts(sec.phaseId)}</select></td>
+            ${s.categories.map((c) => `<td><input data-price="${c.id}" value="${sec.prices[c.id] != null ? sec.prices[c.id] : ''}" placeholder="${c.basePrice} base"></td>`).join('')}
+            <td><input type="checkbox" data-f="active" ${sec.active ? 'checked' : ''}></td>
+            <td style="white-space:nowrap"><button class="btn sm" data-act="save">Save</button> <button class="btn sm red" data-act="del">Del</button></td>
+          </tr>`).join('')}
+          </tbody></table></div></div>
+        <div class="card adm-form">
+          <div style="grid-column:1/-1"><b style="font-size:13px">Add a new section</b></div>
+          <div class="field"><label>Number</label><input id="ns-num" placeholder="e.g. 436"></div>
+          <div class="field"><label>Stand</label><select id="ns-stand">${s.stands.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Level</label><select id="ns-level">${s.levels.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Phase</label><select id="ns-phase">${s.phases.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>Blocks</label><input id="ns-blocks" type="number" value="3" min="1"></div>
+          <div class="field"><label>Rows/block</label><input id="ns-rows" type="number" placeholder="level default"></div>
+          <div class="field"><label>Seats/row</label><input id="ns-seats" type="number" placeholder="level default"></div>
+          ${s.categories.map((c) => `<div class="field"><label>${esc(c.name)} price</label><input id="ns-p-${c.id}" placeholder="${c.basePrice}"></div>`).join('')}
+          <div class="field"><label>Premium blocks (VIP-x)</label><select id="ns-premium"><option value="">No</option><option value="1">Yes</option></select></div>
+          <div class="field" style="justify-content:end"><button class="btn" id="ns-add" style="width:100%">Add section</button></div>
+        </div>`
+      $$('#adm-body .switch[data-ph]').forEach((b) => (b.onclick = async () => {
+        try { await api('PUT', `/api/admin/phases/${b.dataset.ph}`, { onSale: !b.classList.contains('on') }, state.admToken); toast('Phase updated', 'ok'); renderAdminView() } catch (e) { toast(e.message, 'err') }
+      }))
+      $$('#adm-body tr[data-sec]').forEach((tr) => {
+        const secId = tr.dataset.sec
+        const saveBtn = tr.querySelector('[data-act="save"]')
+        saveBtn.onclick = async () => {
+          const prices = {}
+          tr.querySelectorAll('[data-price]').forEach((inp) => { if (inp.value !== '') prices[inp.dataset.price] = Number(inp.value) })
+          try {
+            await api('PUT', `/api/admin/sections/${secId}`, { phaseId: tr.querySelector('[data-f="phaseId"]').value, active: tr.querySelector('[data-f="active"]').checked, prices }, state.admToken)
+            toast('Section saved', 'ok'); renderAdminView()
+          } catch (e) { toast(e.message, 'err') }
+        }
+        tr.querySelector('[data-act="del"]').onclick = async () => {
+          if (!confirm('Delete this section?')) return
+          try { await api('DELETE', `/api/admin/sections/${secId}`, undefined, state.admToken); toast('Section deleted', 'ok'); renderAdminView() } catch (e) { toast(e.message, 'err') }
+        }
+      })
+      $('#ns-add').onclick = async () => {
+        const prices = {}
+        s.categories.forEach((c) => { const v = $(`#ns-p-${c.id}`).value; if (v !== '') prices[c.id] = Number(v) })
+        try {
+          await api('POST', '/api/admin/sections', { num: Number($('#ns-num').value), standId: $('#ns-stand').value, levelId: $('#ns-level').value, phaseId: $('#ns-phase').value, blockCount: Number($('#ns-blocks').value), rowsPerBlock: $('#ns-rows').value ? Number($('#ns-rows').value) : null, seatsPerRow: $('#ns-seats').value ? Number($('#ns-seats').value) : null, premium: !!$('#ns-premium').value, prices }, state.admToken)
+          toast('Section added', 'ok'); renderAdminView()
+        } catch (e) { toast(e.message, 'err') }
+      }
+    } else if (state.admTab === 'ev') {
+      const o = await api('GET', '/api/admin/overview', undefined, state.admToken)
+      const evs = o.perEvent
+      body.innerHTML = `
+        <div class="card" style="padding:14px;margin-bottom:14px"><b style="font-size:13px">Events</b>
+          <div class="tbl-scroll" style="margin-top:8px"><table class="tbl"><thead><tr><th>Event</th><th>Date</th><th>Sold</th><th style="text-align:right">Revenue</th></tr></thead><tbody>
+          ${evs.map((e) => `<tr><td>${esc(e.name)}</td><td>${fmtDate(e.date)}</td><td>${e.sold}</td><td style="text-align:right">${KES(e.revenue)}</td></tr>`).join('')}
+          </tbody></table></div></div>
+        <div class="card adm-form">
+          <div style="grid-column:1/-1"><b style="font-size:13px">Create event</b></div>
+          <div class="field"><label>Name</label><input id="ne-name"></div>
+          <div class="field"><label>Category</label><input id="ne-cat" placeholder="Concert"></div>
+          <div class="field"><label>Date & time</label><input id="ne-date" type="datetime-local"></div>
+          <div class="field"><label>Venue</label><input id="ne-venue" value="Talanta Stadium"></div>
+          <div class="field"><label>Status</label><select id="ne-status"><option>DRAFT</option><option>PUBLISHED</option></select></div>
+          <div class="field" style="justify-content:end"><button class="btn" id="ne-add" style="width:100%">Create</button></div>
+        </div>
+        <p class="sub">Note: standalone admin creates events here; publish to open bookings. Deleting events with orders is blocked to protect sales history.</p>`
+      $('#ne-add').onclick = async () => {
+        if (!$('#ne-name').value || !$('#ne-date').value) { toast('Name and date required', 'err'); return }
+        try {
+          await api('POST', '/api/admin/events', { name: $('#ne-name').value, category: $('#ne-cat').value, date: new Date($('#ne-date').value).toISOString(), venue: $('#ne-venue').value, status: $('#ne-status').value }, state.admToken)
+          toast('Event created', 'ok'); renderAdminView()
+        } catch (e) { toast(e.message, 'err') }
+      }
+    } else if (state.admTab === 'cp') {
+      const s = await api('GET', '/api/admin/stadium', undefined, state.admToken)
+      body.innerHTML = `
+        <div class="card" style="padding:14px;margin-bottom:14px"><b style="font-size:13px">Ticket categories (base prices)</b>
+          <table class="tbl" style="margin-top:8px"><thead><tr><th>Name</th><th>Base price (KSh)</th><th>Colour</th><th>Active</th><th></th></tr></thead><tbody>
+          ${s.categories.map((c) => `<tr data-cat="${c.id}"><td>${esc(c.name)}</td><td><input data-f="basePrice" type="number" value="${c.basePrice}"></td><td><input data-f="color" value="${c.color}" style="width:90px"></td><td><input type="checkbox" data-f="active" ${c.active ? 'checked' : ''}></td><td><button class="btn sm" data-act="save">Save</button></td></tr>`).join('')}
+          </tbody></table></div>
+        <div class="card" style="padding:14px;margin-bottom:14px"><b style="font-size:13px">Promo codes</b>
+          <table class="tbl" style="margin-top:8px"><thead><tr><th>Code</th><th>Discount</th><th>Min amount</th><th>Used</th><th>Active</th></tr></thead><tbody id="promo-rows"></tbody></table>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px">
+            <div class="field" style="margin:0"><label>Code</label><input id="np-code" style="text-transform:uppercase"></div>
+            <div class="field" style="margin:0"><label>Type</label><select id="np-type"><option value="PERCENT">% off</option><option value="FIXED">KSh off</option></select></div>
+            <div class="field" style="margin:0"><label>Value</label><input id="np-val" type="number"></div>
+            <div class="field" style="margin:0"><label>Min spend</label><input id="np-min" type="number" value="0"></div>
+            <div class="field" style="justify-content:end"><button class="btn" id="np-add" style="width:100%">Add promo</button></div>
+          </div></div>`
+      const promoBody = $('#promo-rows')
+      try {
+        const ov = await api('GET', '/api/admin/overview', undefined, state.admToken)
+        // promos come with stadium? keep minimal: load via settings call trick — simpler: reuse stadium payload if included
+      } catch (_) {}
+      // render promos from a dedicated fetch of stadium (promos included below)
+      try {
+        const promos = await (await fetch('/api/admin/promos', { headers: { Authorization: 'Bearer ' + state.admToken } })).json().catch(() => null)
+        if (promos && promos.ok) {
+          promoBody.innerHTML = promos.data.promos.map((p) => `<tr><td><b>${esc(p.code)}</b></td><td>${p.type === 'PERCENT' ? p.value + '%' : KES(p.value)}</td><td>${KES(p.minAmount)}</td><td>${p.usedCount || 0}</td><td><button class="switch ${p.active ? 'on' : ''}" data-promo="${esc(p.code)}"></button></td></tr>`).join('')
+          $$('#promo-rows .switch').forEach((b) => (b.onclick = async () => {
+            try { await api('PUT', `/api/admin/promos/${b.dataset.promo}`, { active: !b.classList.contains('on') }, state.admToken); renderAdminView() } catch (e) { toast(e.message, 'err') }
+          }))
+        } else promoBody.innerHTML = '<tr><td colspan="5">—</td></tr>'
+      } catch (_) { promoBody.innerHTML = '<tr><td colspan="5">—</td></tr>' }
+      $$('#adm-body tr[data-cat] [data-act="save"]').forEach((btn) => (btn.onclick = async () => {
+        const tr = btn.closest('tr')
+        try {
+          await api('PUT', `/api/admin/categories/${tr.dataset.cat}`, { basePrice: Number(tr.querySelector('[data-f="basePrice"]').value), color: tr.querySelector('[data-f="color"]').value, active: tr.querySelector('[data-f="active"]').checked }, state.admToken)
+          toast('Category saved', 'ok')
+        } catch (e) { toast(e.message, 'err') }
+      }))
+      $('#np-add').onclick = async () => {
+        try {
+          await api('POST', '/api/admin/promos', { code: $('#np-code').value, type: $('#np-type').value, value: Number($('#np-val').value), minAmount: Number($('#np-min').value) }, state.admToken)
+          toast('Promo added', 'ok'); renderAdminView()
+        } catch (e) { toast(e.message, 'err') }
+      }
+    } else {
+      const b = await api('GET', '/api/bootstrap', undefined, state.admToken)
+      body.innerHTML = `
+        <div class="card adm-form" style="max-width:640px">
+          <div style="grid-column:1/-1"><b style="font-size:13px">Platform settings</b></div>
+          <div class="field"><label>Venue name</label><input id="set-venue" value="${esc(b.settings.venueName)}"></div>
+          <div class="field"><label>Hold duration (minutes)</label><input id="set-hold" type="number" value="${b.settings.holdMinutes}"></div>
+          <div class="field"><label>Max seats per order</label><input id="set-max" type="number" value="${b.settings.maxSeatsPerOrder}"></div>
+          <div class="field"><label>Support email</label><input id="set-email" value="${esc(b.settings.supportEmail)}"></div>
+          <div class="field"><label>M-Pesa enabled</label><select id="set-mpesa"><option value="1" ${b.settings.mpesaEnabled ? 'selected' : ''}>Yes</option><option value="" ${!b.settings.mpesaEnabled ? 'selected' : ''}>No</option></select></div>
+          <div class="field"><label>Card enabled</label><select id="set-card"><option value="1" ${b.settings.cardEnabled ? 'selected' : ''}>Yes</option><option value="" ${!b.settings.cardEnabled ? 'selected' : ''}>No</option></select></div>
+          <div class="field" style="justify-content:end"><button class="btn" id="set-save" style="width:100%">Save settings</button></div>
+        </div>`
+      $('#set-save').onclick = async () => {
+        try {
+          await api('PUT', '/api/admin/settings', { venueName: $('#set-venue').value, holdMinutes: Number($('#set-hold').value), maxSeatsPerOrder: Number($('#set-max').value), supportEmail: $('#set-email').value, mpesaEnabled: !!$('#set-mpesa').value, cardEnabled: !!$('#set-card').value }, state.admToken)
+          toast('Settings saved', 'ok')
+        } catch (e) { toast(e.message, 'err') }
+      }
+    }
+  } catch (e) {
+    if (e.status === 401) { state.admToken = null; sessionStorage.removeItem('ttx_adm'); renderAdminView() }
+    else body.innerHTML = `<p class="sub">❌ ${esc(e.message)}</p>`
+  }
+}
+/* ---------------- init ---------------- */
+$('#btn-checkout').onclick = startCheckout
+$('#btn-find').onclick = () => findOrder()
+$('#order-lookup').addEventListener('keydown', (e) => { if (e.key === 'Enter') findOrder() })
+$('#btn-scan').onclick = doScan
+$('#scan-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doScan() })
+$('#btn-staff-login').onclick = async () => {
+  try {
+    const r = await api('POST', '/api/staff/login', { email: $('#st-email').value, password: $('#st-pass').value })
+    state.staffToken = r.token; state.staffName = r.user.name
+    localStorage.setItem('ttx_staff', r.token); localStorage.setItem('ttx_staff_name', r.user.name)
+    renderScanView(); toast('Signed in', 'ok')
+    setTimeout(() => $('#scan-input') && $('#scan-input').focus(), 100)
+  } catch (e) { toast(e.message, 'err') }
+}
+$('#btn-admin-login').onclick = async () => {
+  try {
+    const r = await api('POST', '/api/admin/login', { email: $('#ad-email').value, password: $('#ad-pass').value })
+    if (r.user.role !== 'ADMIN') { toast('Not an admin account', 'err'); return }
+    state.admToken = r.token
+    sessionStorage.setItem('ttx_adm', r.token)
+    renderAdminView(); toast('Welcome, ' + r.user.name, 'ok')
+  } catch (e) { toast(e.message, 'err') }
+}
+$$('.modal-bk').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m && m.id !== 'pay-modal') m.classList.remove('on') }))
+$('#cart-toggle').onclick = () => $('#cart').classList.toggle('min')
+if (window.matchMedia('(max-width:900px)').matches) $('#cart').classList.add('min')
+initMapGestures()
+route()
+
+</script>
+</body>
+</html>
